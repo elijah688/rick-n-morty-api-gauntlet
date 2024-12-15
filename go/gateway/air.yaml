@@ -1,0 +1,17 @@
+services:
+  my-project-with-air:
+    image: cosmtrek/air
+    container_name: air-gateway
+    working_dir: /project-package
+    volumes:
+      - ./:/project-package
+    entrypoint: 
+      - air 
+      - -c
+      - air.toml
+    env_file: .env
+    ports:
+     - 8081:8081
+    environment:
+      CRUD_SVC_HOST: http://host.docker.internal:8080
+    command: air -c /project-package/.air.toml

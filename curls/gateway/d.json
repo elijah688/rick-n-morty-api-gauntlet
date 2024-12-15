@@ -1,0 +1,23 @@
+{
+  "id":835,
+  "name":"Mega Sexy Muscle Bunny",
+  "status": "Alive",
+  "species": "Human",
+  "type": "",
+  "gender": "Female",
+  "origin": {
+    "url": "https://rickandmortyapi.com/api/location/1"
+  },
+  "location": {
+    "url": "https://rickandmortyapi.com/api/location/4"
+  },
+  
+  "image": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+  "episodes": [
+    1,
+    2,
+    3
+  ],
+  "url": "https://rickandmortyapi.com/api/character/1",
+  "created": "2017-11-04T18:48:46.250Z"
+}

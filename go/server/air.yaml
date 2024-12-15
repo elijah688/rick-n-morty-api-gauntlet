@@ -1,0 +1,17 @@
+services:
+  my-project-with-air:
+    image: cosmtrek/air
+    container_name: air
+    working_dir: /project-package
+    volumes:
+      - ./:/project-package
+    entrypoint: 
+      - air 
+      - -c
+      - air.toml
+    env_file: .env
+    ports:
+     - 8080:8080
+    environment:
+      MAIN_DB_HOST: host.docker.internal
+    command: air -c /project-package/.air.toml
