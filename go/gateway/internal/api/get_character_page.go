@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Server) getCharacters(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("asdASDASDAS")
+
 	query := r.URL.Query()
 
 	limit, err := strconv.Atoi(query.Get("limit"))
