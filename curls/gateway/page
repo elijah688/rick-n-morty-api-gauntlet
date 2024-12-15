@@ -1,0 +1,4 @@
+#!/bin/sh
+
+
+curl -X GET -v "http://localhost:8081/character?offset=0&limit=20" | jq .
