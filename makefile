@@ -1,4 +1,4 @@
-.PHONY: db_up run migration server gateway
+.PHONY: db_up run migration server gateway run ui
 
 db_up:
 	docker-compose up -d
@@ -13,3 +13,14 @@ server:
 
 gateway:
 	cd ./go/gateway && make air_run
+
+
+ui:
+	cd ./ui/my-react-app; npm run dev
+
+run:
+	(make migration) && \
+	(make server &) && \
+	(make gateway &) && \
+	(make ui &)
+
