@@ -1,17 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import CharacterCards from './components/CharactersCard/CharactersCard'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CharacterCards from './components/CharactersCard/CharactersCard';
+import CharacterForm from './components/CharacterForm/CharacterForm';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-     <CharacterCards></CharacterCards>
-    </>
-  )
+
+      <Router >
+        <Routes>
+          <Route path="/" element={<CharacterCards />} />
+          <Route path="/character/:id" element={<CharacterForm />} />
+          <Route path="/create" element={<CharacterForm />} />
+        </Routes>
+      </Router>
+  );
 }
 
-export default App
+export default App;
