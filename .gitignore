@@ -2,3 +2,4 @@
 api-model
 tmp
 node_modules
+.vite

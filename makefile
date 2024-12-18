@@ -18,7 +18,7 @@ gateway:
 ui:
 	cd ./ui/my-react-app; npm run dev
 
-run:
+run: db_up
 	(make migration) && \
 	(make server &) && \
 	(make gateway &) && \
