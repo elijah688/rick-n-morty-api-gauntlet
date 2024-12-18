@@ -4,15 +4,8 @@ import (
 	"context"
 )
 
-func (cs *CrudService) GetCharacterEpisodes(ctx context.Context, id int) ([]int, error) {
+func (cs *CrudService) GetCharacterEpisodes(ctx context.Context, ids []int) (map[int][]int, error) {
 
-	mEs, err := cs.db.AllCharacterEpisodesByIDs(ctx, []int{id})
+	return cs.db.AllCharacterEpisodesByIDs(ctx, ids)
 
-	if err != nil {
-		return nil, err
-	}
-
-	es := mEs[id]
-
-	return es, nil
 }

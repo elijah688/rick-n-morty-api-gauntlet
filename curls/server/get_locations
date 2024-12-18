@@ -1,0 +1,5 @@
+curl -X POST -v "http://localhost:8080/location/list" \
+-H "content-type: application/json" \
+-d '{"ids":[1,2,3]}'
+
+

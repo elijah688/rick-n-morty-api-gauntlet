@@ -132,7 +132,6 @@ const CharacterCards = () => {
         </div>
 
         <button
-          disabled={characters.length < limit}
           onClick={handleNextPage}
           className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 disabled:bg-blue-300"
         >

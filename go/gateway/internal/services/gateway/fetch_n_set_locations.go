@@ -7,38 +7,68 @@ import (
 	"sync"
 )
 
-func (cs *GatewayService) fetchAndSetLocations(ctx context.Context, character *model.Character) error {
+func Origins(in []model.Character) []int {
+	return extractIDs(in, func(c *model.Character) *int {
+		if c.Origin != nil {
+			return c.Origin.ID
+		}
+		return nil
+	})
+}
+
+func CurrentLocations(in []model.Character) []int {
+	return extractIDs(in, func(c *model.Character) *int {
+		if c.Location != nil {
+			return c.Location.ID
+		}
+		return nil
+	})
+}
+
+func extractIDs(in []model.Character, getField func(*model.Character) *int) []int {
+	res := make([]int, 0)
+	for _, c := range in {
+		if id := getField(&c); id != nil {
+			res = append(res, *id)
+		}
+	}
+	return res
+}
+
+func (cs *GatewayService) fetchAndSetLocations(ctx context.Context, characters []model.Character) ([]model.Character, error) {
 	wg := new(sync.WaitGroup)
-	errChan := make(chan error, 2)
+	errChan := make(chan error, 1)
 
-	var origin, location *model.Location
+	var origins, currentLocations map[int]*model.Location
 
-	if character.Origin != nil {
+	originsIDs, currentLocationIDs := Origins(characters), CurrentLocations(characters)
+
+	if len(originsIDs) > 0 {
 		wg.Add(1)
-		go func(originID int) {
+		go func(oIDs []int) {
 			defer wg.Done()
 
-			res, err := cs.getLocationByID(ctx, originID)
+			res, err := cs.getLocationByIDs(ctx, oIDs)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to fetch origin location: %w", err)
 				return
 			}
-			origin = res
-		}(*character.Origin.ID)
+			origins = res
+		}(originsIDs)
 	}
 
-	if character.Location != nil {
+	if len(currentLocationIDs) > 0 {
 		wg.Add(1)
-		go func(locationID int) {
+		go func(cIDs []int) {
 			defer wg.Done()
 
-			res, err := cs.getLocationByID(ctx, locationID)
+			res, err := cs.getLocationByIDs(ctx, cIDs)
 			if err != nil {
 				errChan <- fmt.Errorf("failed to fetch character location: %w", err)
 				return
 			}
-			location = res
-		}(*character.Location.ID)
+			currentLocations = res
+		}(currentLocationIDs)
 	}
 
 	go func() {
@@ -48,16 +78,14 @@ func (cs *GatewayService) fetchAndSetLocations(ctx context.Context, character *m
 
 	for err := range errChan {
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	if origin != nil {
-		character.Origin = origin
-	}
-	if location != nil {
-		character.Location = location
+	for i := range characters {
+		characters[i].Origin = origins[i]
+		characters[i].Location = currentLocations[i]
 	}
 
-	return nil
+	return characters, nil
 }
