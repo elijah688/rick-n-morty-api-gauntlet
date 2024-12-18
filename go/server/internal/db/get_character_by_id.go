@@ -40,7 +40,7 @@ func (db *Database) GetCharacterByID(ctx context.Context, id int) (*model.Charac
 	}
 
 	if len(characters) == 0 {
-		return nil, fmt.Errorf("no characters found with ID %d", id)
+		return nil, nil
 	}
 
 	return &characters[0], nil

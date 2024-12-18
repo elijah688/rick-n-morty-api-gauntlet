@@ -19,6 +19,7 @@ func (s *Server) getCharacterByID(w http.ResponseWriter, r *http.Request) {
 
 	item, err := s.svcs.CRUD().GetCharacterByID(r.Context(), id)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
