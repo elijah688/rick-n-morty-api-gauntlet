@@ -12,7 +12,9 @@ func (cs *GatewayService) CompileCharacter(ctx context.Context, id int) (*model.
 	if err != nil {
 		return nil, err
 	}
-
+	if character == nil {
+		return nil, nil
+	}
 	chars, err := cs.compileCharacters(ctx, []model.Character{*character})
 	if err != nil {
 		return nil, err

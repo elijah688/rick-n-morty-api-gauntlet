@@ -51,7 +51,6 @@ func (db *Database) DeleteCharacter(ctx context.Context, characterID int) error 
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		fmt.Println(err)
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 

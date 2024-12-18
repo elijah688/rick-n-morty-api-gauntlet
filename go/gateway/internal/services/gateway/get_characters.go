@@ -6,22 +6,54 @@ import (
 	"fmt"
 	"net/http"
 	"riki_gateway/internal/model"
+	"sync"
 )
 
-func (cs *GatewayService) GetCharacters(ctx context.Context, limit, offset int) ([]model.Character, error) {
-	chars, err := cs.getCharacters(ctx, limit, offset)
-	if err != nil {
-		return nil, err
+func (cs *GatewayService) GetCharacters(ctx context.Context, limit, offset int) (*model.CharacterListResponse, error) {
+
+	wg, errChan := new(sync.WaitGroup), make(chan error, 2)
+	wg.Add(2)
+
+	chars, cErr := []model.Character(nil), error(nil)
+	go func() {
+		defer wg.Done()
+		chars, cErr = cs.getCharacters(ctx, limit, offset)
+		if cErr != nil {
+			errChan <- cErr
+			return
+		}
+	}()
+
+	total, tErr := (*int)(nil), error(nil)
+	go func() {
+		defer wg.Done()
+
+		total, tErr = cs.getTotal(ctx)
+		if tErr != nil {
+			errChan <- tErr
+			return
+		}
+	}()
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return cs.compileCharacters(ctx, chars)
+	fmt.Println(chars)
+
+	return &model.CharacterListResponse{Characters: chars, Total: *total}, nil
 
 }
 
 func (cs *GatewayService) getCharacters(ctx context.Context, limit, offset int) ([]model.Character, error) {
 	host := cs.cfg.GatewayConfig.CRUDServiceHost
 
-	fmt.Println("adsadsa")
 	url := fmt.Sprintf("%s/character?limit=%d&offset=%d", host, limit, offset)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

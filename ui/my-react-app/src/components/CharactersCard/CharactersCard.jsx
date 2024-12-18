@@ -2,25 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const CharacterCards = () => {
-  const [characters, setCharacters] = useState([]);
-  const [page, setPage] = useState(0);
-  const [inputPage, setInputPage] = useState(0); // Track input field value
-  const navigate = useNavigate();
-  const limit = 4
+  const [{ characters, total }, setCharacters] = useState({
+    characters: [],
+    total: 0,
 
-  const fetchCharacters = async (page) => {
-    const offset = page * limit;
+  });
+  const [page, setPage] = useState(0);
+
+  const [inputPage, setInputPage] = useState(0);
+  const navigate = useNavigate();
+  let limit = 4
+  const offset = page * limit;
+
+
+  const fetchCharacters = async () => {
     const response = await fetch(`http://localhost:8081/character?offset=${offset}&limit=${limit}`);
     const data = await response.json();
-    if (data === null) {
+    if (data.characters === null) {
       navigate('/not-found');
       return
     }
-    setCharacters(data);
+    setCharacters((data));
   };
 
+
+
+
   useEffect(() => {
-    fetchCharacters(page);
+    fetchCharacters();
   }, [page]);
 
   const handleNextPage = () => {
@@ -46,8 +55,11 @@ const CharacterCards = () => {
       });
 
       if (response.ok) {
-        // Update the state to remove the deleted character
-        setCharacters((prev) => prev.filter((character) => character.id !== id));
+        setCharacters((prevState) => ({
+          ...prevState,
+          characters: prevState.characters.filter((character) => character.id !== id),
+          total: prevState.total - 1, 
+        }));
       } else {
         console.error('Failed to delete character');
       }
@@ -132,8 +144,10 @@ const CharacterCards = () => {
             Go to
           </button>
         </div>
+        {console.log()}
 
         <button
+          disabled={limit >= total - offset}
           onClick={handleNextPage}
           className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 disabled:bg-blue-300"
         >
