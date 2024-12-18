@@ -1,16 +1,42 @@
-import React, { useState, useEffect, } from 'react';
-import { useNavigate } from "react-router";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const CharacterCards = () => {
   const [characters, setCharacters] = useState([]);
   const [page, setPage] = useState(0);
+  const [inputPage, setInputPage] = useState(0); // Track input field value
   const navigate = useNavigate();
+  const limit = 4
 
   const fetchCharacters = async (page) => {
-    const offset = page * 10;
-    const response = await fetch(`http://localhost:8081/character?offset=${offset}&limit=4`);
+    const offset = page * limit;
+    const response = await fetch(`http://localhost:8081/character?offset=${offset}&limit=${limit}`);
     const data = await response.json();
+    if (data === null) {
+      navigate('/not-found');
+      return
+    }
     setCharacters(data);
+  };
+
+  useEffect(() => {
+    fetchCharacters(page);
+  }, [page]);
+
+  const handleNextPage = () => {
+    setPage(page + 1);
+    setInputPage(page + 1);
+  };
+
+  const handlePrevPage = () => {
+    if (page > 0) {
+      setPage(page - 1);
+      setInputPage(page - 1);
+    }
+  };
+
+  const handleEdit = (id) => {
+    navigate(`/character/${id}`);
   };
 
   const deleteCharacter = async (id) => {
@@ -30,27 +56,17 @@ const CharacterCards = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCharacters(page);
-  }, [page]);
-
-  const handleNextPage = () => {
-    setPage(page + 1);
+  const handleInputChange = (e) => {
+    const newPage = Number(e.target.value);
+    setInputPage(newPage);
   };
 
-  const handlePrevPage = () => {
-    if (page > 0) {
-      setPage(page - 1);
-    }
+  const handleGoToPage = () => {
+    setPage(inputPage);
   };
 
   const handleCreate = () => {
-    navigate("/create")
-  };
-
-
-  const handleEdit = (id) => {
-    navigate(`/character/${id}`);
+    navigate("/create");
   };
 
   return (
@@ -97,21 +113,45 @@ const CharacterCards = () => {
         >
           Prev
         </button>
+
+        {/* Page number input */}
+        <div className="flex items-center">
+          <input
+            type="number"
+            value={inputPage}
+            onChange={handleInputChange}
+            className="px-3 py-2 border border-gray-300 rounded-md"
+            min={0}
+          />
+          <button
+            onClick={handleGoToPage}
+            className="ml-2 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600"
+          >
+            Go to
+          </button>
+        </div>
+
         <button
-          onClick={handleCreate}
-          className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 disabled:bg-green-300"
-        >
-          Create
-        </button>
-        <button
+          disabled={characters.length < limit}
           onClick={handleNextPage}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600"
+          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 disabled:bg-blue-300"
         >
           Next
+        </button>
+      </div>
+
+      {/* Create Character button */}
+      <div className="mt-4">
+        <button
+          onClick={handleCreate}
+          className="px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600"
+        >
+          Create Character
         </button>
       </div>
     </div>
   );
 };
+
 
 export default CharacterCards;

@@ -20,7 +20,7 @@ func (cs *GatewayService) getCharacterByID(ctx context.Context, id int) (*model.
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("received non-OK response status: %s", resp.Status)
+		return nil, nil
 	}
 
 	var character model.Character

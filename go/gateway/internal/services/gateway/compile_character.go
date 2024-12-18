@@ -16,6 +16,9 @@ func (cs *GatewayService) CompileCharacter(ctx context.Context, id int) (*model.
 }
 
 func (cs *GatewayService) compileCharacter(ctx context.Context, character *model.Character) (*model.Character, error) {
+	if character == nil {
+		return nil, nil
+	}
 	pID := character.ID
 	if pID == nil {
 		return nil, errors.New("id cannot be nil")

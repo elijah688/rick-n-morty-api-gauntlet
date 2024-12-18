@@ -23,7 +23,12 @@ const CharacterForm = () => {
     useEffect(() => {
         if (isEditMode) {
             fetch(`http://localhost:8081/character/${id}`)
-                .then((res) => res.json())
+                .then((res) => {
+                    if (res.status === 404) {
+                        return navigate("/not-found")
+                    }
+                    return res.json()
+                })
                 .then((data) => setCharacter({
                     ...data,
                     episodes: data.episodes ?? [],
@@ -51,6 +56,10 @@ const CharacterForm = () => {
             });
 
             if (response.ok) {
+                if (response == null) {
+                    navigate('/not-found');
+                    return
+                }
                 navigate('/');
             } else {
                 console.error('Failed to save character');

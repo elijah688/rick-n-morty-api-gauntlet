@@ -18,8 +18,12 @@ func (s *Server) getCharacterByID(w http.ResponseWriter, r *http.Request) {
 
 	char, err := s.svcs.Gateway().CompileCharacter(r.Context(), id)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+	if char == nil {
+		fmt.Println(char)
+		http.Error(w, "character not found", http.StatusNotFound)
 		return
 	}
 
