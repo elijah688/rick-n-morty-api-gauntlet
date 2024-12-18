@@ -78,7 +78,9 @@ func (cs *GatewayService) compileCharacters(ctx context.Context, characters []mo
 		es := episodes[i]
 		charsWithLocs[i].Episodes = &es
 		charsWithLocs[i].Debut = debuts[i]
+
 	}
+
 	return charsWithLocs, nil
 }
 

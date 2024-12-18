@@ -16,7 +16,6 @@ func (s *Server) getLocationByIDs(w http.ResponseWriter, r *http.Request) {
 
 	characters, err := s.svcs.CRUD().GetLocationByID(r.Context(), reqBody.IDs)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
