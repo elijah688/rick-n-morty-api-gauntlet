@@ -22,7 +22,6 @@ func (s *Server) getCharacterByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if char == nil {
-		fmt.Println(char)
 		http.Error(w, "character not found", http.StatusNotFound)
 		return
 	}

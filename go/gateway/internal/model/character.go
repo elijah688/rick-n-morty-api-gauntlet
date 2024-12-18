@@ -55,6 +55,11 @@ func (c *Character) ToRecord() goqu.Record {
 	return r
 }
 
+type CharacterListResponse struct {
+	Characters []Character `json:"characters"`
+	Total      int         `json:"total"`
+}
+
 func getLocationID(l *Location) *int {
 
 	if l == nil {

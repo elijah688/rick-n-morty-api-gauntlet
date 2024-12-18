@@ -44,3 +44,24 @@ func (db *Database) GetCharacters(ctx context.Context, limit, offset int) ([]mod
 
 	return characters, nil
 }
+
+func (db *Database) GetTotal(ctx context.Context) (int, error) {
+	query, _, err := goqu.
+		Dialect("postgres").
+		From("character").
+		Select(goqu.L("COUNT(*) AS total")).
+		Prepared(true).
+		ToSQL()
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to build count query: %w", err)
+	}
+
+	var totalCount int
+	err = db.pool.QueryRow(ctx, query).Scan(&totalCount)
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute count query: %w", err)
+	}
+
+	return totalCount, nil
+}

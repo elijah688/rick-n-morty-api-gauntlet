@@ -16,4 +16,6 @@ func (s *Server) Routes() {
 
 	s.router.Post("/character/list/debut", s.getDebuts)
 
+	s.router.Get("/character/total", s.getTotal)
+
 }

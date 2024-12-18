@@ -10,7 +10,6 @@ import (
 func (s *Server) upsertCharacter(w http.ResponseWriter, r *http.Request) {
 	var character model.Character
 	if err := json.NewDecoder(r.Body).Decode(&character); err != nil {
-		fmt.Println(err)
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -20,7 +19,6 @@ func (s *Server) upsertCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := s.svcs.Gateway().UpsertCharacter(r.Context(), character)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
 		return
 	}
