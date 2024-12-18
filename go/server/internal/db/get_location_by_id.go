@@ -10,12 +10,12 @@ import (
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 )
 
-func (db *Database) GetLocationByID(ctx context.Context, id int) (*model.Location, error) {
+func (db *Database) GetLocationByIDs(ctx context.Context, ids []int) (map[int]*model.Location, error) {
 
 	query, vals, err := goqu.Dialect("postgres").
 		From("location").
 		Select("*").
-		Where(goqu.Ex{"id": id}).
+		Where(goqu.C("id").In(ids)).
 		Prepared(true).
 		ToSQL()
 
@@ -29,19 +29,16 @@ func (db *Database) GetLocationByID(ctx context.Context, id int) (*model.Locatio
 	}
 	defer rows.Close()
 
-	var locations []model.Location
+	locations := make(map[int]*model.Location, 0)
 	for rows.Next() {
 		location, err := scan.ScanLocationRow(rows)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan row: %w", err)
 
 		}
-		locations = append(locations, *location)
+
+		locations[*location.ID] = location
 	}
 
-	if len(locations) == 0 {
-		return nil, fmt.Errorf("no location found with ID %d", id)
-	}
-
-	return &locations[0], nil
+	return locations, nil
 }

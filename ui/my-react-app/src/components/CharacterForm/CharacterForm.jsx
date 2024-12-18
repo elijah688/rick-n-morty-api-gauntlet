@@ -56,10 +56,6 @@ const CharacterForm = () => {
             });
 
             if (response.ok) {
-                if (response == null) {
-                    navigate('/not-found');
-                    return
-                }
                 navigate('/');
             } else {
                 console.error('Failed to save character');

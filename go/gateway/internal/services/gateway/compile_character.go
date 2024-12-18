@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"riki_gateway/internal/model"
+	"sync"
 )
 
 func (cs *GatewayService) CompileCharacter(ctx context.Context, id int) (*model.Character, error) {
@@ -12,39 +13,81 @@ func (cs *GatewayService) CompileCharacter(ctx context.Context, id int) (*model.
 		return nil, err
 	}
 
-	return cs.compileCharacter(ctx, character)
+	chars, err := cs.compileCharacters(ctx, []model.Character{*character})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(chars) > 0 {
+		return &chars[0], nil
+	}
+
+	return nil, errors.New("filed compiling character")
 }
 
-func (cs *GatewayService) compileCharacter(ctx context.Context, character *model.Character) (*model.Character, error) {
-	if character == nil {
+func (cs *GatewayService) compileCharacters(ctx context.Context, characters []model.Character) ([]model.Character, error) {
+
+	if len(characters) == 0 {
 		return nil, nil
 	}
-	pID := character.ID
-	if pID == nil {
-		return nil, errors.New("id cannot be nil")
-	}
 
-	id := *character.ID
-
-	if err := cs.fetchAndSetLocations(ctx, character); err != nil {
-		return nil, err
-	}
-
-	es, err := cs.getEpisodes(ctx, id)
+	charsWithLocs, err := cs.fetchAndSetLocations(ctx, characters)
 	if err != nil {
 		return nil, err
 	}
 
-	if es != nil {
-		character.Episodes = &es
+	ids := getIDs(charsWithLocs)
+	wg, errChan := new(sync.WaitGroup), make(chan error, 1)
+	wg.Add(2)
+
+	episodes, eErr := map[int][]int(nil), error(nil)
+	go func() {
+		defer wg.Done()
+
+		episodes, eErr = cs.getCharacterEpisodesByIDs(ctx, ids)
+		if err != nil {
+			errChan <- eErr
+			return
+		}
+	}()
+
+	debuts, dErr := map[int]*model.Episode(nil), error(nil)
+	go func() {
+		defer wg.Done()
+
+		debuts, dErr = cs.getDebusByIDs(ctx, ids)
+		if err != nil {
+			errChan <- dErr
+			return
+		}
+
+	}()
+
+	go func() {
+		wg.Wait()
+		close(errChan)
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	dbt, err := cs.getDebut(ctx, id)
-	if err != nil {
-		return nil, err
+	for i := range charsWithLocs {
+		es := episodes[i]
+		charsWithLocs[i].Episodes = &es
+		charsWithLocs[i].Debut = debuts[i]
 	}
+	return charsWithLocs, nil
+}
 
-	character.Debut = dbt
-
-	return character, nil
+func getIDs(cs []model.Character) []int {
+	res := make([]int, 0)
+	for _, c := range cs {
+		if c.ID != nil {
+			res = append(res, *c.ID)
+		}
+	}
+	return res
 }

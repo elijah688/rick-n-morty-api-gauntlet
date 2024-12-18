@@ -14,7 +14,6 @@ func (s *Server) upsertCharacter(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
-
 	if err := character.Validate(); err != nil {
 		http.Error(w, "invalid character", http.StatusBadRequest)
 		return

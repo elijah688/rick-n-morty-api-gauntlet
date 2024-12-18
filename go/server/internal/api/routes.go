@@ -10,10 +10,10 @@ func (s *Server) Routes() {
 
 	s.router.Delete("/character/{id}", s.deleteCharacter)
 
-	s.router.Get("/location/{id}", s.getLocationByID)
+	s.router.Post("/location/list", s.getLocationByIDs)
 
-	s.router.Get("/character/{id}/episodes", s.getCharacterEpisodes)
+	s.router.Post("/character/list/episodes", s.getCharacterEpisodesByIDs)
 
-	s.router.Get("/character/{id}/debut", s.getDebut)
+	s.router.Post("/character/list/debut", s.getDebuts)
 
 }

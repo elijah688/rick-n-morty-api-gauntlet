@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"riki_gateway/internal/model"
@@ -14,7 +15,16 @@ func (cs *GatewayService) UpsertCharacter(ctx context.Context, character model.C
 	if err != nil {
 		return nil, err
 	}
-	return cs.compileCharacter(ctx, char)
+
+	comiledCs, err := cs.compileCharacters(ctx, []model.Character{*char})
+	if err != nil {
+		return nil, err
+	}
+	if len(comiledCs) > 0 {
+		return &comiledCs[0], nil
+	}
+
+	return nil, errors.New("coutn'd compile character")
 
 }
 func (cs *GatewayService) upsertCharacter(ctx context.Context, character model.Character) (*model.Character, error) {

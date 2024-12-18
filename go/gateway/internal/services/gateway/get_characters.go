@@ -9,26 +9,19 @@ import (
 )
 
 func (cs *GatewayService) GetCharacters(ctx context.Context, limit, offset int) ([]model.Character, error) {
-	res, err := cs.getCharacters(ctx, limit, offset)
+	chars, err := cs.getCharacters(ctx, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	for i := range res {
-		c := res[i]
-		r, err := cs.compileCharacter(ctx, &c)
-		if err != nil {
-			return nil, err
-		}
-		res[i] = *r
-	}
+	return cs.compileCharacters(ctx, chars)
 
-	return res, nil
 }
 
 func (cs *GatewayService) getCharacters(ctx context.Context, limit, offset int) ([]model.Character, error) {
 	host := cs.cfg.GatewayConfig.CRUDServiceHost
 
+	fmt.Println("adsadsa")
 	url := fmt.Sprintf("%s/character?limit=%d&offset=%d", host, limit, offset)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)

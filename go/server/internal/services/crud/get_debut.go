@@ -5,14 +5,8 @@ import (
 	"riki/internal/model"
 )
 
-func (cs *CrudService) GetDebutByID(ctx context.Context, id int) (*model.Episode, error) {
+func (cs *CrudService) GetDebutByIDs(ctx context.Context, ids []int) (map[int]*model.Episode, error) {
 
-	c, err := cs.db.FirstAppearenceByCharIDs(ctx, []int{id})
+	return cs.db.FirstAppearenceByCharIDs(ctx, ids)
 
-	if err != nil {
-		return nil, err
-	}
-
-	e := c[id]
-	return e, nil
 }

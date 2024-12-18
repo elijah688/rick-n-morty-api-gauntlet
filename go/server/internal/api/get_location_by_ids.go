@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi"
 )
 
-func (s *Server) getLocationByID(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
-		http.Error(w, "invalid ID parameter", http.StatusBadRequest)
+func (s *Server) getLocationByIDs(w http.ResponseWriter, r *http.Request) {
+
+	var reqBody requestBody
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		http.Error(w, fmt.Sprintf("failed to decode request body: %s", err), http.StatusBadRequest)
 		return
 	}
 
-	characters, err := s.svcs.CRUD().GetLocationByID(r.Context(), id)
+	characters, err := s.svcs.CRUD().GetLocationByID(r.Context(), reqBody.IDs)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
