@@ -10,7 +10,6 @@ class LocationService:
 
     async def get_locations_by_ids(self, ids:List[int]) -> dict[int, Location]:
         url = f"{self.__config.CRUD_SVC_HOST}/location/list"
-        print(ids)
         async with httpx.AsyncClient() as client:
             response = await client.post(url, json={"ids":[x for x in ids if x is not None]})
 
