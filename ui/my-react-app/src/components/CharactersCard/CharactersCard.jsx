@@ -97,8 +97,8 @@ const CharacterCards = () => {
               <p className="text-gray-500">Status: {character.status}</p>
               <p className="text-gray-500">Species: {character.species}</p>
               <p className="text-gray-500">Gender: {character.gender}</p>
-              <p className="text-gray-500">Origin: {character?.origin.name}</p>
-              <p className="text-gray-500">Current Location: {character?.location.name}</p>
+              <p className="text-gray-500">Origin: {character?.origin?.name}</p>
+              <p className="text-gray-500">Current Location: {character?.location?.name}</p>
             </div>
             <div className="p-4 flex justify-between">
               <button
