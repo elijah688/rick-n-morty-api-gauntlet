@@ -44,25 +44,24 @@ class Services:
         debuts, episodes, locations = await self.__fetch_related_data(chars)
 
 
-        res_chars= []
-        for c in chars:
-            res_chars.append(CharacterResponse(
-                id=c.id,
-                name=c.name,
-                status=c.status,
-                species=c.species,
-                type=c.type,
-                gender=c.gender,
-                image=c.image,
-                url=c.url,
-                created=c.created,
-                **map_related_data(c, debuts, episodes, locations),
-            ))
-
-            print(res_chars)
+       
         return CharactersResponse(
             total=total,
-            characters= res_chars
+            characters= [
+                CharacterResponse(
+                    id=c.id,
+                    name=c.name,
+                    status=c.status,
+                    species=c.species,
+                    type=c.type,
+                    gender=c.gender,
+                    image=c.image,
+                    url=c.url,
+                    created=c.created,
+                    **map_related_data(c, debuts, episodes, locations),
+                 )
+             for c in chars
+            ]
         )
     
     
