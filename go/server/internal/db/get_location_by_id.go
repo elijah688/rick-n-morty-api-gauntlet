@@ -11,7 +11,9 @@ import (
 )
 
 func (db *Database) GetLocationByIDs(ctx context.Context, ids []int) (map[int]*model.Location, error) {
-
+	if len(ids) == 0 {
+		return nil, nil
+	}
 	query, vals, err := goqu.Dialect("postgres").
 		From("location").
 		Select("*").
