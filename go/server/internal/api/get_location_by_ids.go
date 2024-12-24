@@ -14,7 +14,7 @@ func (s *Server) getLocationByIDs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	characters, err := s.svcs.CRUD().GetLocationByID(r.Context(), reqBody.IDs)
+	locaitons, err := s.svcs.CRUD().GetLocationByID(r.Context(), reqBody.IDs)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("error: %s", err.Error()), http.StatusInternalServerError)
 		return
@@ -22,7 +22,7 @@ func (s *Server) getLocationByIDs(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(characters); err != nil {
+	if err := json.NewEncoder(w).Encode(locaitons); err != nil {
 		http.Error(w, "failed to write response", http.StatusInternalServerError)
 	}
 }
