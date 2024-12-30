@@ -55,3 +55,18 @@ py_run: db_up kill
 	(make py_server &) && \
 	(make py_gateway &) && \
 	(make ui &)
+
+ts_server:
+	cd ./ts/server && export $$(cat .env | xargs) && deno run --allow-all --watch main.ts
+
+
+ts_gateway:
+	cd ./ts/gateway && export $$(cat .env | xargs) && deno run --allow-all --watch main.ts
+
+
+ts_run: db_up kill
+	(make migration) && \
+	(make ts_server &) && \
+	(make ts_gateway &) && \
+	(make ui &)
+
